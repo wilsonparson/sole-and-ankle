@@ -31,6 +31,14 @@ const ShoeCard = ({
       ? 'new-release'
       : 'default'
 
+  function getBadgeText(variant) {
+    return variant === "on-sale"
+      ? "Sale"
+      : variant === "new-release"
+      ? "Just Released!"
+      : null;
+  }
+
   return (
     <Link href={`/shoe/${slug}`}>
       <Wrapper>
@@ -40,11 +48,23 @@ const ShoeCard = ({
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <Price variant={variant}>
+            {variant === "on-sale" ? (
+              <s>{formatPrice(price)}</s>
+            ) : (
+              formatPrice(price)
+            )}
+          </Price>
         </Row>
         <Row>
           <ColorInfo>{pluralize("Color", numOfColors)}</ColorInfo>
+          {variant === "on-sale" ? (
+            <SalePrice>{formatPrice(salePrice)}</SalePrice>
+          ) : null}
         </Row>
+        {variant !== "default" ? (
+          <Badge variant={variant}>{getBadgeText(variant)}</Badge>
+        ) : null}
       </Wrapper>
     </Link>
   );
@@ -56,7 +76,9 @@ const Link = styled.a`
   flex: 1 1 340px;
 `;
 
-const Wrapper = styled.article``;
+const Wrapper = styled.article`
+  position: relative;
+`;
 
 const ImageWrapper = styled.div`
   position: relative;
@@ -73,6 +95,8 @@ const Image = styled.img`
 
 const Row = styled.div`
   font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
 `;
 
 const Name = styled.h3`
@@ -80,7 +104,10 @@ const Name = styled.h3`
   color: ${COLORS.gray[900]};
 `;
 
-const Price = styled.span``;
+const Price = styled.span`
+  color: ${(props) =>
+    props.variant === "on-sale" ? COLORS.gray[700] : COLORS.gray[900]};
+`;
 
 const ColorInfo = styled.p`
   color: ${COLORS.gray[700]};
@@ -89,6 +116,20 @@ const ColorInfo = styled.p`
 const SalePrice = styled.span`
   font-weight: ${WEIGHTS.medium};
   color: ${COLORS.primary};
+`;
+
+const Badge = styled.div`
+  position: absolute;
+  right: -4px;
+  top: 12px;
+  padding: 8px 12px;
+  background: green;
+  font-weight: 700;
+  font-size: 0.875rem;
+  border-radius: 2px;
+  color: ${COLORS.white};
+  background: ${(props) =>
+    props.variant === "on-sale" ? COLORS.primary : COLORS.secondary};
 `;
 
 export default ShoeCard;
